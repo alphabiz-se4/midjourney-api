@@ -57,7 +57,8 @@ export const formatInfo = (msg: string) => {
     queuedJobsRelax: "",
     runningJobs: "",
   }; // Initialize jsonResult with empty object
-  msg.split("\n").forEach(function (line) {
+  const msgList = msg.split("\n")
+  msgList.forEach(function (line, index) {
     const colonIndex = line.indexOf(":");
     if (colonIndex > -1) {
       const key = line.substring(0, colonIndex).trim().replaceAll("**", "");
@@ -88,7 +89,13 @@ export const formatInfo = (msg: string) => {
           jsonResult.queuedJobsRelax = value;
           break;
         case "Running Jobs":
-          jsonResult.runningJobs = value;
+          let jobs = ''
+          if (msgList.length - 1 > index) {
+            for (let i = index + 1; i < msgList.length; i++) {
+              jobs += '\n' + msgList[i]
+            }
+          }
+          jsonResult.runningJobs = value + jobs
           break;
         default:
         // Do nothing
