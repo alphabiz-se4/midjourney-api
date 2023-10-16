@@ -71,26 +71,28 @@ async function main() {
   // });
   // console.log("Upscale", Upscale);
 
+  const customDate = new Date()
   console.log('!!!', initResponce.config)
   setTimeout(async () => {
     const infoResponse = await client.Info()
     const { runningJobs } = infoResponse
-    console.log('infoResponse!!!', infoResponse, runningJobs.split('\n'))
-  }, 0)
-  //   // Custom old
-  //   console.log('Custom old!!!');
-  //   const Varition = await client.Custom({
-  //     index: 1,
-  //     msgId: "1162577325297242173",
-  //     flags: 0,
-  //     customId: "MJ::JOB::low_variation::1::8131645e-8a19-4708-80ed-adae018541cb::SOLO",
-  //     // content: "面饼 Girl holding a biscuit Smiling happily Three-quarters profile Lines Monochrome ",
-  //     // content: "Coloured flatbread, Girl holding a biscuit Smiling happily Three-quarters profile Lines Monochrome ", //remix mode require content
-  //     loading: (uri, progress) => {
-  //       console.log("loading", uri, "progress", progress);
-  //     },
-  //   });
-  //   console.log('Custom old!!!!!!', Varition);
+    console.log('infoResponse!!!', customDate.valueOf(), runningJobs.split('\n'))
+  }, 10000)
+  // Custom old
+  console.log('Custom old!!!');
+  
+  const Varition = await client.Custom({
+    msgId: "1163376023245697054",
+    flags: 0,
+    // hash: 'dc8afbd8-cd32-4e59-b081-64a5acaf4aad',
+    customId: "MJ::JOB::variation::1::dc8afbd8-cd32-4e59-b081-64a5acaf4aad",
+    content: "Hand-drawn sailboat --ar 2:3",
+    // content: "Coloured flatbread, Girl holding a biscuit Smiling happily Three-quarters profile Lines Monochrome ", //remix mode require content
+    loading: (uri, progress) => {
+      console.log("loading", uri, "progress", progress);
+    },
+  });
+  console.log('Custom old!!!!!!', Varition);
   
   
     // // Varition old
