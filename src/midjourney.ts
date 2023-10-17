@@ -333,7 +333,7 @@ export class Midjourney extends MidjourneyMessage {
               if (this.config.Remix !== true) {
                 return "";
               }
-              customId = toPanCustom(msgId);
+              customId = toPanCustom(customId);
               const panHttpStatus = await this.MJApi.PanModalApi({
                 msgId: id,
                 customId,
