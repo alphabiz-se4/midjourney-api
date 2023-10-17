@@ -15,6 +15,7 @@ import {
 } from "./utils";
 import { WsMessage } from "./discord.ws";
 import { faceSwap } from "./face.swap";
+import { error } from "console";
 export class Midjourney extends MidjourneyMessage {
   public config: MJConfig;
   private wsClient?: WsMessage;
@@ -314,6 +315,8 @@ export class Midjourney extends MidjourneyMessage {
               throw new Error(`unknown customId ${customId}`);
           }
         },
+      }).catch(error => {
+        throw error
       });
     }
     if (content === undefined || content === "") {
