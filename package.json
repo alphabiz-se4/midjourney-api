@@ -19,7 +19,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/erictik/midjourney-client.git"
+    "url": "git+https://github.com/alphabiz-se4/midjourney-api.git"
   },
   "keywords": [
     "midjourney-client",
@@ -28,12 +28,12 @@
   "engines": {
     "node": ">=18"
   },
-  "author": "Eric Yang <yanghao@10d.xin>",
+  "author": "zhaoyulin <zyl@alpha.biz>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/erictik/midjourney-client/issues"
+    "url": "https://github.com/alphabiz-se4/midjourney-api/issues"
   },
-  "homepage": "https://github.com/erictik/midjourney-client#readme",
+  "homepage": "https://github.com/alphabiz-se4/midjourney-api",
   "devDependencies": {
     "@types/async": "^3.2.20",
     "@types/node": "^18.16.0",
