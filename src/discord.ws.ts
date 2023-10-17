@@ -652,8 +652,8 @@ export class WsMessage {
             // reject(new Error("onmodal is not defined"))
             return "";
           }
-          var nonce = await onmodal(oldnonce, id).catch(error => reject(error)) || '';
-          if (nonce === "") {
+          var nonce = await onmodal(oldnonce, id).catch(error => reject(error));
+          if (typeof nonce !== 'string' || nonce === "") {
             // reject(new Error("onmodal return empty nonce"))
             return "";
           }
