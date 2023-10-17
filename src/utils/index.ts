@@ -150,6 +150,8 @@ export function custom2Type(custom: string) {
     return "variation";
   } else if (custom.includes("remaster")) {
     return "reroll";
+  } else if  (custom.includes('pan_')) {
+    return "pan"
   }
   return null;
 }
@@ -159,6 +161,17 @@ export const toRemixCustom = (customID: string) => {
   const convertedString = `MJ::RemixModal::${parts[4]}::${parts[3]}::1`;
   return convertedString;
 };
+
+export const toRerollCustom = (msgId: string) => {
+  const convertedString = `MJ::ImagineModal::${msgId}`;
+  return convertedString;
+}
+
+export const toPanCustom = (customID: string) => {
+  const parts = customID.split("::");
+  const convertedString = `MJ::PanModal::${parts[2].replace('pan_', '')}::${parts[4]}::1`;
+  return convertedString;
+}
 
 export async function base64ToBlob(base64Image: string): Promise<Blob> {
   // 移除 base64 图像头部信息

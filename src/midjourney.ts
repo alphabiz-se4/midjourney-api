@@ -8,6 +8,8 @@ import { MidjourneyApi } from "./midjourney.api";
 import { MidjourneyMessage } from "./discord.message";
 import {
   toRemixCustom,
+  toRerollCustom,
+  toPanCustom,
   custom2Type,
   nextNonce,
   random,
@@ -307,6 +309,40 @@ export class Midjourney extends MidjourneyMessage {
               if (remixHttpStatus !== 204) {
                 throw new Error(
                   `RemixApi failed with status ${remixHttpStatus}`
+                );
+              }
+              return newNonce;
+            case "reroll":
+              if (this.config.Remix !== true) {
+                return "";
+              }
+              customId = toRerollCustom(msgId);
+              const rerollHttpStatus = await this.MJApi.ShortenImagineApi({
+                msgId: id,
+                customId,
+                prompt: content,
+                nonce: newNonce,
+              });
+              if (rerollHttpStatus !== 204) {
+                throw new Error(
+                  `RecollApi failed with status ${rerollHttpStatus}`
+                );
+              }
+              return newNonce;
+            case "pan":
+              if (this.config.Remix !== true) {
+                return "";
+              }
+              customId = toPanCustom(msgId);
+              const panHttpStatus = await this.MJApi.PanModalApi({
+                msgId: id,
+                customId,
+                prompt: content,
+                nonce: newNonce,
+              });
+              if (panHttpStatus !== 204) {
+                throw new Error(
+                  `PanApi failed with status ${panHttpStatus}`
                 );
               }
               return newNonce;

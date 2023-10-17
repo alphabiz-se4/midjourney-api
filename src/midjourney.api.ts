@@ -6,6 +6,7 @@ import {
   ModalSubmitID,
   RemixModalSubmitID,
   ShortenModalSubmitID,
+  PanModalSubmitID,
   UploadParam,
   UploadSlot,
 } from "./interfaces";
@@ -262,6 +263,25 @@ export class MidjourneyApi extends Command {
       customId,
       prompt,
       submitCustomId: ShortenModalSubmitID,
+    });
+  }
+  async PanModalApi({
+    nonce,
+    msgId,
+    customId,
+    prompt,
+  }: {
+    nonce: string;
+    msgId: string;
+    customId: string;
+    prompt: string;
+  }) {
+    return this.ModalSubmitApi({
+      nonce,
+      msgId,
+      customId,
+      prompt,
+      submitCustomId: PanModalSubmitID,
     });
   }
 
