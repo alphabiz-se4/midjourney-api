@@ -147,7 +147,7 @@ export function custom2Type(custom: string) {
   } else if (custom.includes("CustomZoom")) {
     return "customZoom";
   } else if (custom.includes("Outpaint")) {
-    return "variation";
+    return "outpaint";
   } else if (custom.includes("remaster")) {
     return "reroll";
   } else if  (custom.includes('pan_')) {

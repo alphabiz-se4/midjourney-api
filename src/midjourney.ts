@@ -346,6 +346,22 @@ export class Midjourney extends MidjourneyMessage {
                 );
               }
               return newNonce;
+            case "outpaint":
+              if (this.config.Remix !== true) {
+                return "";
+              }
+              const outpaintHttpStatus = await this.MJApi.CustomApi({
+                msgId: id,
+                customId,
+                flags,
+                nonce: newNonce,
+              });
+              if (outpaintHttpStatus !== 204) {
+                throw new Error(
+                  `outpaintApi failed with status ${outpaintHttpStatus}`
+                );
+              }
+              return newNonce;
             default:
               return "";
               throw new Error(`unknown customId ${customId}`);
