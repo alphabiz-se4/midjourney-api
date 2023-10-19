@@ -158,7 +158,7 @@ export function custom2Type(custom: string) {
 
 export const toRemixCustom = (customID: string) => {
   const parts = customID.split("::");
-  const convertedString = `MJ::RemixModal::${parts[4]}::${parts[3]}::1`;
+  const convertedString = `MJ::RemixModal::${parts[4]}::${parts[3]}::${parts[2] === 'low_variation' ? '0' : '1'}`;
   return convertedString;
 };
 
