@@ -317,18 +317,19 @@ export class Midjourney extends MidjourneyMessage {
               if (this.config.Remix !== true) {
                 return "";
               }
-              customId = toRerollCustom(msgId);
+              const recorllCustomId = toRerollCustom(msgId);
               let rerollHttpStatus = await this.MJApi.ShortenImagineApi({
                 msgId: id,
-                customId,
+                customId: recorllCustomId,
                 prompt: content,
                 nonce: newNonce,
               });
               if (rerollHttpStatus === 400) {
-                customId = toRemixRerollCustom(msgId);
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                const remixRerollCustomId = toRemixRerollCustom(customId);
                 rerollHttpStatus = await this.MJApi.RemixApi({
                   msgId: id,
-                  customId,
+                  customId: remixRerollCustomId,
                   prompt: content,
                   nonce: newNonce,
                 });
