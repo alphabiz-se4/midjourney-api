@@ -265,6 +265,7 @@ export class MidjourneyApi extends Command {
       submitCustomId: ShortenModalSubmitID,
     });
   }
+
   async PanModalApi({
     nonce,
     msgId,

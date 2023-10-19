@@ -9,6 +9,7 @@ import { MidjourneyMessage } from "./discord.message";
 import {
   toRemixCustom,
   toRerollCustom,
+  toRemixRerollCustom,
   toPanCustom,
   custom2Type,
   nextNonce,
@@ -317,12 +318,21 @@ export class Midjourney extends MidjourneyMessage {
                 return "";
               }
               customId = toRerollCustom(msgId);
-              const rerollHttpStatus = await this.MJApi.ShortenImagineApi({
+              let rerollHttpStatus = await this.MJApi.ShortenImagineApi({
                 msgId: id,
                 customId,
                 prompt: content,
                 nonce: newNonce,
               });
+              if (rerollHttpStatus === 400) {
+                customId = toRemixRerollCustom(msgId);
+                rerollHttpStatus = await this.MJApi.RemixApi({
+                  msgId: id,
+                  customId,
+                  prompt: content,
+                  nonce: newNonce,
+                });
+              }
               if (rerollHttpStatus !== 204) {
                 throw new Error(
                   `RecollApi failed with status ${rerollHttpStatus}`

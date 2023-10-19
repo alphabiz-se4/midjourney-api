@@ -167,6 +167,12 @@ export const toRerollCustom = (msgId: string) => {
   return convertedString;
 }
 
+export const toRemixRerollCustom =  (customID: string) => {
+  const parts = customID.split("::");
+  const convertedString = `MJ::RemixModal::${parts[4]}::1::1`;
+  return convertedString;
+};
+
 export const toPanCustom = (customID: string) => {
   const parts = customID.split("::");
   const convertedString = `MJ::PanModal::${parts[2].replace('pan_', '')}::${parts[4]}::1`;
