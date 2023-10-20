@@ -142,6 +142,8 @@ export function custom2Type(custom: string) {
     return "upscale";
   } else if (custom.includes("variation")) {
     return "variation";
+  } else if (/pan\_\w+\_reroll/.test(custom)) {
+    return "pan_reroll";
   } else if (custom.includes("reroll")) {
     return "reroll";
   } else if (custom.includes("CustomZoom")) {
@@ -176,6 +178,12 @@ export const toRemixRerollCustom =  (customID: string) => {
 export const toPanCustom = (customID: string) => {
   const parts = customID.split("::");
   const convertedString = `MJ::PanModal::${parts[2].replace('pan_', '')}::${parts[4]}::1`;
+  return convertedString;
+}
+
+export const toPanRerollCustom = (customID: string, sequenceNumber?: number) => {
+  const parts = customID.split("::");
+  const convertedString = `MJ::PanModal::${parts[2].replace('pan_', '').replace('_reroll', '')}::${parts[4]}::${sequenceNumber || 1}`;
   return convertedString;
 }
 

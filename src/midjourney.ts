@@ -11,6 +11,7 @@ import {
   toRerollCustom,
   toRemixRerollCustom,
   toPanCustom,
+  toPanRerollCustom,
   custom2Type,
   nextNonce,
   random,
@@ -250,12 +251,14 @@ export class Midjourney extends MidjourneyMessage {
     customId,
     content,
     flags,
+    sequenceNumber,
     loading,
   }: {
     msgId: string;
     customId: string;
     content?: string;
     flags: number;
+    sequenceNumber?: number;
     loading?: LoadingHandler;
   }) {
     if (this.config.Ws) {
@@ -264,7 +267,7 @@ export class Midjourney extends MidjourneyMessage {
     const nonce = nextNonce();
     const httpStatus = await this.MJApi.CustomApi({
       msgId,
-      customId,
+      customId: customId.replace(/pan\_\w+\_reroll/, 'reroll'),
       flags,
       nonce,
     });
@@ -354,6 +357,23 @@ export class Midjourney extends MidjourneyMessage {
               if (panHttpStatus !== 204) {
                 throw new Error(
                   `PanApi failed with status ${panHttpStatus}`
+                );
+              }
+              return newNonce;
+            case "pan_reroll":
+              if (this.config.Remix !== true) {
+                return "";
+              }
+              customId = toPanRerollCustom(customId, sequenceNumber);
+              const panRerollHttpStatus = await this.MJApi.PanModalApi({
+                msgId: id,
+                customId,
+                prompt: content,
+                nonce: newNonce,
+              });
+              if (panRerollHttpStatus !== 204) {
+                throw new Error(
+                  `PanRerollApi failed with status ${panRerollHttpStatus}`
                 );
               }
               return newNonce;
