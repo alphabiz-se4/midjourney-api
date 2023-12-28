@@ -12,6 +12,7 @@ import {
   toRemixRerollCustom,
   toPanCustom,
   toPanRerollCustom,
+  toPicReaderCustom,
   custom2Type,
   nextNonce,
   random,
@@ -252,6 +253,7 @@ export class Midjourney extends MidjourneyMessage {
     content,
     flags,
     sequenceNumber,
+    imgUri,
     loading,
   }: {
     msgId: string;
@@ -259,12 +261,16 @@ export class Midjourney extends MidjourneyMessage {
     content?: string;
     flags: number;
     sequenceNumber?: number;
+    imgUri?: string;
     loading?: LoadingHandler;
   }) {
     if (this.config.Ws) {
       await this.getWsClient();
     }
     const nonce = nextNonce();
+    if (customId === 'MJ::Picread::Retry' && imgUri) {
+      return this.Describe(imgUri);
+    }
     const httpStatus = await this.MJApi.CustomApi({
       msgId,
       customId: customId.replace(/pan\_\w+\_reroll/, 'reroll'),
@@ -374,6 +380,24 @@ export class Midjourney extends MidjourneyMessage {
               if (panRerollHttpStatus !== 204) {
                 throw new Error(
                   `PanRerollApi failed with status ${panRerollHttpStatus}`
+                );
+              }
+              return newNonce;
+            case "pic_reader":
+              if (this.config.Remix !== true) {
+                return "";
+              }
+              customId = toPicReaderCustom(customId);
+              console.log('[pic_reader]newNonce', newNonce)
+              const picReaderHttpStatus = await this.MJApi.DescribeImagineApi({
+                msgId: id,
+                customId,
+                prompt: content,
+                nonce: newNonce,
+              });
+              if (picReaderHttpStatus !== 204) {
+                throw new Error(
+                  `DescribeImagineApi failed with status ${picReaderHttpStatus}`
                 );
               }
               return newNonce;

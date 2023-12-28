@@ -1,6 +1,6 @@
 {
   "name": "zyl-midjourney-api",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Node.js client for the unofficial MidJourney API.",
   "main": "libs/index.js",
   "types": "libs/index.d.ts",
@@ -8,6 +8,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
+    "publish": "npm publish",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",
     "example:imagine": "tsx ./examples/imagine-ws.ts"

@@ -152,8 +152,10 @@ export function custom2Type(custom: string) {
     return "outpaint";
   } else if (custom.includes("remaster")) {
     return "reroll";
-  } else if  (custom.includes('pan_')) {
+  } else if (custom.includes('pan_')) {
     return "pan"
+  } else if (custom.includes('PicReader')) {
+    return "pic_reader"
   }
   return null;
 }
@@ -184,6 +186,12 @@ export const toPanCustom = (customID: string) => {
 export const toPanRerollCustom = (customID: string, sequenceNumber?: number) => {
   const parts = customID.split("::");
   const convertedString = `MJ::PanModal::${parts[2].replace('pan_', '').replace('_reroll', '')}::${parts[4]}::${sequenceNumber || 1}`;
+  return convertedString;
+}
+
+export const toPicReaderCustom = (customID: string) => {
+  const parts = customID.split("::");
+  const convertedString = customID.includes('Retry')? customID : `MJ::Picreader::Modal::${parts[3]}`;
   return convertedString;
 }
 
