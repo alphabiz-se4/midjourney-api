@@ -196,6 +196,7 @@ export class Midjourney extends MidjourneyMessage {
     if (httpStatus !== 204) {
       throw new Error(`SeedApi failed with status ${httpStatus}`);
     }
+    await new Promise(resolve => setTimeout(resolve, 1000))
     const jobResult = await this.MJApi.GetJobInfoApi({})
     let JobInfoList
     try {
