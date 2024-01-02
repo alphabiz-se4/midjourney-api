@@ -1,6 +1,6 @@
 {
   "name": "zyl-midjourney-api",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Node.js client for the unofficial MidJourney API.",
   "main": "libs/index.js",
   "types": "libs/index.d.ts",

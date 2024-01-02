@@ -188,7 +188,7 @@ export class Midjourney extends MidjourneyMessage {
     }
     return wsClient.waitDescribe(nonce);
   }
-  async Seed(msgId: string, hash: string) {
+  async Seed(msgId: string, hash?: string) {
     // const wsClient = await this.getWsClient();
     this.log(`Seed`, msgId);
     const httpStatus = await this.MJApi.SeedApi({ msgId });
@@ -223,7 +223,7 @@ export class Midjourney extends MidjourneyMessage {
       console.error("Error while reading from the stream", error);
       throw new Error(`GetJobInfoApi failed with ${error.message}`);
     }
-    const targetJob = JobInfoList.find((info: { content: string | string[]; components: { components: { url: string | string[]; }; }; }) => info.content.includes(`**Job ID**: ${hash}`) || info?.components?.components?.url.includes(msgId))
+    const targetJob = JobInfoList.find((info: any) =>  hash ? info?.content?.includes(`**Job ID**: ${hash}`) : info?.components?.[0]?.components?.[0]?.url.includes(msgId))
     let match = targetJob.content.match(/\*\*seed\*\*\s(\d+)/);
 
     const CancelSeedApiHttpStatus = await this.MJApi.CancelSeedApi({ msgId });
