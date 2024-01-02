@@ -6,6 +6,8 @@ export const MJBot = "936929561302675456";
 export const NijiBot = "1022952195194359889";
 export interface MJConfig {
   ChannelId: string;
+  PrivateChannelId?: string;
+  PrivateSalaiToken?: string;
   SalaiToken: string;
   BotId: typeof MJBot | typeof NijiBot;
   Debug: boolean;
@@ -26,6 +28,8 @@ export interface MJConfig {
 export interface MJConfigParam {
   SalaiToken: string; //DISCORD_TOKEN
   ChannelId?: string; //DISCORD_CHANNEL_ID
+  PrivateChannelId?: string; // DISCORD_PRIVATE_CHANNEL_ID
+  PrivateSalaiToken?: string;
   ServerId?: string; //DISCORD_SERVER_ID
   BotId?: typeof MJBot | typeof NijiBot; //DISCORD_BOT_ID MJBot OR NijiBot
   Debug?: boolean; // print log

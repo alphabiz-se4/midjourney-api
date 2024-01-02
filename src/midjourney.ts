@@ -20,7 +20,7 @@ import {
 } from "./utils";
 import { WsMessage } from "./discord.ws";
 import { faceSwap } from "./face.swap";
-import { error } from "console";
+
 export class Midjourney extends MidjourneyMessage {
   public config: MJConfig;
   private wsClient?: WsMessage;
@@ -188,7 +188,51 @@ export class Midjourney extends MidjourneyMessage {
     }
     return wsClient.waitDescribe(nonce);
   }
+  async Seed(msgId: string, hash: string) {
+    // const wsClient = await this.getWsClient();
+    this.log(`Seed`, msgId);
+    const httpStatus = await this.MJApi.SeedApi({ msgId });
+    this.log(`Seed [httpStatus]`, httpStatus);
+    if (httpStatus !== 204) {
+      throw new Error(`SeedApi failed with status ${httpStatus}`);
+    }
+    const jobResult = await this.MJApi.GetJobInfoApi({})
+    let JobInfoList
+    try {
+      // 首先从ReadableStream中获取全部数据
+      const reader = jobResult.body.getReader();
+      let chunks = []; // 用来存储每个数据块
+      // 利用reader.read()读取数据块，此操作返回Promise
+      let finished = false;
+      while (!finished) {
+        const { done, value } = await reader.read();
+        if (done) {
+          finished = true;
+        } else {
+          chunks.push(value);
+        }
+      }
+      // 将所有数据块合并为一个Uint8Array
+      let data = new Uint8Array(chunks.reduce((acc, val) => acc.concat(Array.from(val)), []));
+      // 将Uint8Array转换为字符串
+      let text = new TextDecoder("utf-8").decode(data);
+      // 将字符串转换为JSON对象
+      JobInfoList = JSON.parse(text);
+    } catch (error: any) {
+      // 处理可能出现的错误
+      console.error("Error while reading from the stream", error);
+      throw new Error(`GetJobInfoApi failed with ${error.message}`);
+    }
+    const targetJob = JobInfoList.find((info: { content: string | string[]; components: { components: { url: string | string[]; }; }; }) => info.content.includes(`**Job ID**: ${hash}`) || info?.components?.components?.url.includes(msgId))
+    let match = targetJob.content.match(/\*\*seed\*\*\s(\d+)/);
 
+    const CancelSeedApiHttpStatus = await this.MJApi.CancelSeedApi({ msgId });
+    this.log(`CancelSeed [httpStatus]`, CancelSeedApiHttpStatus);
+    if (CancelSeedApiHttpStatus !== 204) {
+      throw new Error(`CancelSeedApi failed with status ${CancelSeedApiHttpStatus}`);
+    }
+    return  match ? match[1] : null;
+  }
   async Shorten(prompt: string) {
     const wsClient = await this.getWsClient();
     const nonce = nextNonce();

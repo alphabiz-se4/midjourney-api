@@ -21,13 +21,14 @@ export class MidjourneyApi extends Command {
     super(config);
   }
   private safeIteractions = (request: any) => {
-    return new Promise<number>((resolve, reject) => {
+    return new Promise<any>((resolve, reject) => {
       this.queue.push(
         {
           request,
           callback: (any: any) => {
             resolve(any);
           },
+          ...(request.method && { method: request.method }),
         },
         (error: any, result: any) => {
           if (error) {
@@ -42,11 +43,18 @@ export class MidjourneyApi extends Command {
   private processRequest = async ({
     request,
     callback,
+    method = "POST",
   }: {
     request: any;
     callback: (any: any) => void;
+    method?: "POST" | "PUT" | "GET" | "DELETE";
   }) => {
-    const httpStatus = await this.interactions(request);
+    let httpStatus;
+    if(method === "POST") {
+      httpStatus = await this.interactions(request);
+    } else if (method === "PUT" || method === "GET" || method === "DELETE") {
+      httpStatus = await this.getInteractions(request, method);
+    }
     callback(httpStatus);
     await sleep(this.config.ApiInterval);
   };
@@ -75,6 +83,35 @@ export class MidjourneyApi extends Command {
     } catch (error) {
       console.error(error);
       return 500;
+    }
+  };
+  private getInteractions = async (payload: any, method: string) => {
+    try {
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: payload.SalaiToken || this.config.SalaiToken,
+      };
+      console.log('[getInteractions][start]', headers)
+      const response = await this.config.fetch(
+        `${this.config.DiscordBaseUrl}/api/v9/${payload.targetUrl}`, // 修改URL和路径以适应PUT请求的目标
+        {
+          method,
+          headers: headers,
+        }
+      );
+      if (response.status >= 400) {
+        // 记录错误
+        console.error("api.error.config", {
+          method, // 显示调用的HTTP方法
+          payload: JSON.stringify(payload),
+          config: this.config,
+        });
+      }
+      if (payload?.needResult === 'Response') return response
+      return response.status;
+    } catch (error) {
+      console.error(error);
+      return 500; // 或者其他适当的HTTP错误码
     }
   };
 
@@ -226,6 +263,43 @@ export class MidjourneyApi extends Command {
     return this.safeIteractions(payload);
   }
 
+  async RequestSeedApi({
+    msgId,
+  }: {
+    msgId: string;
+  }) {
+    return this.safeIteractions({
+      targetUrl: `channels/${this.config.ChannelId}/messages/${msgId}/reactions/%E2%9C%89%EF%B8%8F/%40me?location=Message&type=0`,
+      method: 'PUT',
+    });
+  }
+
+  async CancelSeedApi({
+    msgId,
+  }: {
+    msgId: string;
+  }) {
+    return this.safeIteractions({
+      targetUrl: `channels/${this.config.ChannelId}/messages/${msgId}/reactions/%E2%9C%89%EF%B8%8F/0/%40me?location=Message&burst=false`,
+      method: 'DELETE',
+    });
+  }
+
+  async GetJobInfoApi({
+    limit = 50,
+    needResult = 'Response'
+  }: {
+    limit?: number
+    needResult?: string
+  }) {
+    return this.safeIteractions({
+      targetUrl: `channels/${this.config.PrivateChannelId}/messages?limit=${limit}`,
+      SalaiToken: this.config.PrivateSalaiToken,
+      needResult,
+      method: 'GET',
+    });
+  }
+
   async RemixApi({
     nonce,
     msgId,
@@ -303,6 +377,17 @@ export class MidjourneyApi extends Command {
       customId,
       prompt,
       submitCustomId: DescribeModalSubmitID,
+    });
+  }
+
+  async SeedApi({
+    msgId,
+  }: {
+    msgId: string;
+  }) {
+    console.log('[SeedApi]', msgId)
+    return this.RequestSeedApi({
+      msgId,
     });
   }
 
