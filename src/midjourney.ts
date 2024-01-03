@@ -197,6 +197,12 @@ export class Midjourney extends MidjourneyMessage {
       throw new Error(`SeedApi failed with status ${httpStatus}`);
     }
     await new Promise(resolve => setTimeout(resolve, 3000))
+    const CancelSeedApiHttpStatus = await this.MJApi.CancelSeedApi({ msgId });
+    this.log(`CancelSeed [httpStatus]`, CancelSeedApiHttpStatus);
+    if (CancelSeedApiHttpStatus !== 204) {
+      throw new Error(`CancelSeedApi failed with status ${CancelSeedApiHttpStatus}`);
+    }
+    await new Promise(resolve => setTimeout(resolve, 2000))
     const jobResult = await this.MJApi.GetJobInfoApi({})
     let JobInfoList
     try {
@@ -226,12 +232,6 @@ export class Midjourney extends MidjourneyMessage {
     }
     const targetJob = JobInfoList.find((info: any) =>  hash ? info?.content?.includes(`**Job ID**: ${hash}`) : info?.components?.[0]?.components?.[0]?.url.includes(msgId))
     let match = targetJob.content.match(/\*\*seed\*\*\s(\d+)/);
-
-    const CancelSeedApiHttpStatus = await this.MJApi.CancelSeedApi({ msgId });
-    this.log(`CancelSeed [httpStatus]`, CancelSeedApiHttpStatus);
-    if (CancelSeedApiHttpStatus !== 204) {
-      throw new Error(`CancelSeedApi failed with status ${CancelSeedApiHttpStatus}`);
-    }
     return  match ? match[1] : null;
   }
   async Shorten(prompt: string) {
