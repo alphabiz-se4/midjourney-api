@@ -36,11 +36,12 @@ export class Command {
       return this.cache[name];
     }
     if (this.config.ServerId) {
-      const command = await this.getCommand(name);
+      const command = await this.getCommand(name, true);
       this.cache[name] = command;
       return command;
     }
     this.allCommand();
+    this.cache[name]
     return this.cache[name];
   }
   async allCommand() {
@@ -48,13 +49,11 @@ export class Command {
       type: "1",
       include_applications: "true",
     });
-    // const url = `${this.config.DiscordBaseUrl}/api/v9/channels/${this.config.ChannelId}/application-commands/search?${searchParams}`;
-    const url = `${this.config.DiscordBaseUrl}/api/v9/guilds/${this.config.ServerId}/application-command-index
+    const url = `${this.config.DiscordBaseUrl}/api/v9/guilds/${this.config.ServerId}/application-command-index`;
 
     const response = await this.config.fetch(url, {
       headers: { authorization: this.config.SalaiToken },
     });
-
     const data = await response.json();
     if (data?.application_commands) {
       data.application_commands.forEach((command: any) => {
@@ -65,8 +64,8 @@ export class Command {
       });
     }
   }
-
-  async getCommand(name: CommandName) {
+  
+  async getCommand(name: CommandName, flag: boolean) {
     const searchParams = new URLSearchParams({
       type: "1",
       query: name,
@@ -74,13 +73,14 @@ export class Command {
       include_applications: "true",
       // command_ids: `${this.config.BotId}`,
     });
-    const url = `${this.config.DiscordBaseUrl}/api/v9/channels/${this.config.ChannelId}/application-commands/search?${searchParams}`;
+    const url = flag ? `${this.config.DiscordBaseUrl}/api/v9/guilds/${this.config.ServerId}/application-command-index` : `${this.config.DiscordBaseUrl}/api/v9/channels/${this.config.ChannelId}/application-command-index`;
     const response = await this.config.fetch(url, {
       headers: { authorization: this.config.SalaiToken },
     });
     const data = await response.json();
-    if (data?.application_commands?.[0]) {
-      return data.application_commands[0];
+    if (data?.application_commands) {
+      console.log(data.application_commands.filter((item: { name: string; }) => item.name === name)[0])
+      return data.application_commands.filter((item: { name: string; }) => item.name === name)[0];
     }
     throw new Error(`Failed to get application_commands for command ${name}`);
   }
@@ -157,7 +157,7 @@ export class Command {
     options: any[] = [],
     attachments: any[] = []
   ) {
-    const command = await this.cacheCommand(name);
+    const command = await this.cacheCommand(name) as any;
     const data = {
       version: command.version,
       id: command.id,

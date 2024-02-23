@@ -43,11 +43,12 @@ export class Midjourney extends MidjourneyMessage {
     }
     //if auth failed, will throw error
     // if (this.config.ServerId) {
-    //   await this.MJApi.getCommand("settings");
+    //   await this.MJApi.getCommand("settings", true);
     // } else {
     //   await this.MJApi.allCommand();
     // }
-    await this.MJApi.allCommand()
+    this.MJApi.allCommand()
+
     if (this.wsClient) return this;
     this.wsClient = new WsMessage(this.config, this.MJApi);
     await this.wsClient.onceReady();
