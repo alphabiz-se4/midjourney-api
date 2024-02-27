@@ -369,6 +369,37 @@ export class Midjourney extends MidjourneyMessage {
                 );
               }
               return newNonce;
+            case "inpaint":
+              const regionHttpStatus = await this.MJApi.RegionApi({
+                msgId: id,
+                customId,
+                flags,
+                nonce: newNonce,
+              });
+              console.log('RegionApi!!!', regionHttpStatus)
+              if (regionHttpStatus !== 204) {
+                throw new Error(
+                  `RegionApi failed with status ${regionHttpStatus}`
+                );
+              }
+              return newNonce;
+            case "shorten":
+              if (this.config.Remix !== true) {
+                return "";
+              }
+              customId = toRerollCustom(msgId);
+              const shortenHttpStatus = await this.MJApi.ShortenImagineApi({
+                msgId: id,
+                customId,
+                prompt: content,
+                nonce: newNonce,
+              });
+              if (shortenHttpStatus !== 204) {
+                throw new Error(
+                  `Shorten failed with status ${shortenHttpStatus}`
+                );
+              }
+              return newNonce;
             case "reroll":
               if (this.config.Remix !== true) {
                 return "";

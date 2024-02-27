@@ -191,6 +191,25 @@ export class MidjourneyApi extends Command {
     });
   }
 
+  async RegionApi({
+    msgId,
+    customId,
+    nonce = nextNonce(),
+    flags,
+  }: {
+    msgId: string;
+    customId: string;
+    nonce?: string;
+    flags: number;
+  }) {
+    return this.CustomApi({
+      msgId,
+      customId,
+      flags,
+      nonce,
+    });
+  }
+
   async CustomApi({
     msgId,
     customId,

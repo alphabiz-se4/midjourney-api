@@ -148,6 +148,10 @@ export function custom2Type(custom: string) {
     return "reroll";
   } else if (custom.includes("CustomZoom")) {
     return "customZoom";
+  } else if (custom.includes("Inpaint")) {
+    return "inpaint";
+  } else if (custom.includes("PromptAnalyzer")) {
+    return "shorten";
   } else if (custom.includes("Outpaint")) {
     return "outpaint";
   } else if (custom.includes("remaster")) {
