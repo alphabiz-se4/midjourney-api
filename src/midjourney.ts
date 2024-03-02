@@ -245,6 +245,28 @@ export class Midjourney extends MidjourneyMessage {
     }
     return wsClient.waitShorten(nonce);
   }
+  async ShowDetails({
+    msgId,
+    customId,
+    flags,
+  }: {
+    msgId: string,
+    customId: string,
+    flags: number
+  }) {
+    const wsClient = await this.getWsClient();
+    const nonce = nextNonce();
+    const httpStatus = await this.MJApi.CustomApi({
+      msgId,
+      customId: customId,
+      flags,
+      nonce,
+    });
+    if (httpStatus !== 204) {
+      throw new Error(`ShowDetailsApi failed with status ${httpStatus}`);
+    }
+    return wsClient.waitShorten(nonce);
+  }
 
   async Variation({
     index,
@@ -301,6 +323,7 @@ export class Midjourney extends MidjourneyMessage {
     flags,
     sequenceNumber,
     imgUri,
+    mask,
     loading,
   }: {
     msgId: string;
@@ -309,12 +332,13 @@ export class Midjourney extends MidjourneyMessage {
     flags: number;
     sequenceNumber?: number;
     imgUri?: string;
+    mask?: string;
     loading?: LoadingHandler;
   }) {
     if (this.config.Ws) {
       await this.getWsClient();
     }
-    const nonce = nextNonce();
+    let nonce = nextNonce();
     if (customId === 'MJ::Picread::Retry' && imgUri) {
       return this.Describe(imgUri);
     }
@@ -327,12 +351,45 @@ export class Midjourney extends MidjourneyMessage {
     if (httpStatus !== 204) {
       throw new Error(`CustomApi failed with status ${httpStatus}`);
     }
+    let type = ''
+    let originalId = ''
+    let newContent = ''
     if (this.wsClient) {
+      if (customId.includes('MJ::Inpaint::1::')) {
+        const msg = await this.wsClient.waitMessage(nonce)
+        type = 'region'
+        originalId = msg.id
+        const varyRegionCustomId = msg.custom_id.split('::')[2]
+        const imageInfo = await this.MJApi.getImageInfoApi({
+          customId: varyRegionCustomId
+        })
+        if (imageInfo?.status !== 200) {
+          throw new Error(
+            `InpaintApi failed with status ${imageInfo.status}`
+          );
+        }
+        const varyRegionPrompt = imageInfo?.body?.prompt
+        console.log('@@@@@@varyRegionPrompt', varyRegionPrompt)
+        newContent = '**' + varyRegionPrompt.replace(/^[^-]* --/, `${content} --`) + '**'
+        console.log('@@@@@@newContent', newContent)
+        const inpaintHttpStatus = await this.MJApi.InpaintApi({
+          customId: varyRegionCustomId,
+          prompt: content || '',
+          mask: mask || '',
+        })
+        if (inpaintHttpStatus !== 200) {
+          throw new Error(
+            `InpaintApi failed with status ${inpaintHttpStatus}`
+          );
+        }
+      }
       return await this.wsClient.waitImageMessage({
         nonce,
         loading,
         messageId: msgId,
-        prompt: content,
+        type,
+        originalId,
+        prompt: newContent || content,
         onmodal: async (nonde, id) => {
           if (content === undefined || content === "") {
             return "";
@@ -370,19 +427,7 @@ export class Midjourney extends MidjourneyMessage {
               }
               return newNonce;
             case "inpaint":
-              const regionHttpStatus = await this.MJApi.RegionApi({
-                msgId: id,
-                customId,
-                flags,
-                nonce: newNonce,
-              });
-              console.log('RegionApi!!!', regionHttpStatus)
-              if (regionHttpStatus !== 204) {
-                throw new Error(
-                  `RegionApi failed with status ${regionHttpStatus}`
-                );
-              }
-              return newNonce;
+              return ''
             case "shorten":
               if (this.config.Remix !== true) {
                 return "";

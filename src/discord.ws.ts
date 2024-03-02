@@ -133,10 +133,16 @@ export class WsMessage {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
   private async messageCreate(message: any) {
-    const { embeds, id, nonce, components, attachments } = message;
+    const { embeds, id, nonce, components, attachments, interaction_metadata } = message;
+    if (id && !nonce) {
+      this.updateMjEventIdByOriginalId(id, interaction_metadata?.id)
+    }
     if (nonce) {
       // this.log("waiting start image or info or error");
       this.updateMjEventIdByNonce(id, nonce);
+      if (/^MJ::iframe::/g.test(message?.custom_id) || /Variations \(Region\)/g.test(message?.content)) {
+        return this.iframe(message);
+      }
       if (embeds?.[0]) {
         const { color, description, title } = embeds[0];
         this.log("embeds[0].color", color);
@@ -275,8 +281,12 @@ export class WsMessage {
   private async onMessageCreate(message: any) {
     const { channel_id, author, interaction } = message;
     if (channel_id !== this.config.ChannelId) return;
+    if (/^MJ::iframe::/g.test(message?.custom_id)) {
+      this.messageCreate(message)
+      return
+    }
     if (author?.id !== this.config.BotId) return;
-    if (interaction && interaction.user.id !== this.UserId) return;
+    if (!message?.content.includes('Variations (Region)') && interaction && interaction.user.id !== this.UserId) return;
     // this.log("[messageCreate]", JSON.stringify(message));
     this.messageCreate(message);
   }
@@ -285,7 +295,7 @@ export class WsMessage {
     const { channel_id, author, interaction } = message;
     if (channel_id !== this.config.ChannelId) return;
     if (author?.id !== this.config.BotId) return;
-    if (interaction && interaction.user.id !== this.UserId) return;
+    if (!message?.content.includes('Variations (Region)') && interaction && interaction.user.id !== this.UserId) return;
     // this.log("[messageUpdate]", JSON.stringify(message));
     this.messageUpdate(message);
   }
@@ -313,6 +323,7 @@ export class WsMessage {
     // console.log(data);
     switch (msg.t) {
       case "READY":
+        this.config.SessionId = message.session_id
         this.emitSystem("ready", message.user);
         break;
       case "MESSAGE_CREATE":
@@ -332,6 +343,10 @@ export class WsMessage {
         if (message.nonce) {
           this.emitSystem("interactionCreate", message);
         }
+        break;
+      case "INTERACTION_IFRAME_MODAL_CREATE":
+        this.emitSystem("messageCreate", message);
+        break;
     }
   }
   //continue click appeal or Acknowledged
@@ -421,6 +436,15 @@ export class WsMessage {
     this.filterMessages(MJmsg);
     return;
   }
+  private iframe(message: any) {
+    console.log('@@@iframe', message.nonce)
+    const event = this.getEventByNonce(message.nonce)
+    console.log('@@@iframe', event)
+    if (!event) {
+      return;
+    }
+    this.emitImage(event.nonce, message);
+  }
   private processingImage(message: any) {
     const { content, id, attachments, flags } = message;
     if (!content) {
@@ -506,7 +530,19 @@ export class WsMessage {
     event.id = id;
     this.log("updateMjEventIdByNonce success", this.waitMjEvents.get(nonce));
   }
-
+  private updateMjEventIdByOriginalId(id: string, originalId: string) {
+    if (originalId === "" || id === "") return;
+    let event = null
+    for (const [key, value] of this.waitMjEvents.entries()) {
+      if (value?.originalId === originalId) {
+        event = value;
+      }
+    }
+    if (!event) return;
+    if (event.type !== 'region') return
+    event.id = id;
+    this.log("updateMjEventIdByOriginalResponseMessageId success", this.waitMjEvents.get(event.nonce));
+  }
   protected async log(...args: any[]) {
     this.config.Debug && console.info(...args, new Date().toISOString());
   }
@@ -619,11 +655,15 @@ export class WsMessage {
     nonce,
     prompt,
     onmodal,
+    type,
+    originalId,
     messageId,
     loading,
   }: {
     nonce: string;
     prompt?: string;
+    type?: string;
+    originalId?: string;
     messageId?: string;
     onmodal?: OnModal;
     loading?: LoadingHandler;
@@ -646,6 +686,8 @@ export class WsMessage {
       };
       this.waitMjEvents.set(nonce, {
         nonce,
+        ...(type && { type }),
+        ...(originalId && { originalId }),
         prompt,
         onmodal: async (oldnonce, id) => {
           if (onmodal === undefined) {
@@ -664,6 +706,13 @@ export class WsMessage {
         },
       });
       this.onceImage(nonce, handleImageMessage);
+    });
+  }
+  async waitMessage(nonce: string) {
+    return new Promise<any | null>((resolve) => {
+      this.onceMJ(nonce, (message) => {
+        resolve(message);
+      });
     });
   }
   async waitDescribe(nonce: string) {

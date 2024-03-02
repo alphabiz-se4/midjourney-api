@@ -150,6 +150,8 @@ export function custom2Type(custom: string) {
     return "customZoom";
   } else if (custom.includes("Inpaint")) {
     return "inpaint";
+  } else if (custom.includes("PromptAnalyzerExtended")) {
+    return 'show_details'
   } else if (custom.includes("PromptAnalyzer")) {
     return "shorten";
   } else if (custom.includes("Outpaint")) {

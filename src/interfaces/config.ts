@@ -19,6 +19,7 @@ export interface MJConfig {
   Remix?: boolean;
   HuggingFaceToken?: string;
   DiscordBaseUrl: string;
+  DiscordsaysUrl: string
   WsBaseUrl: string;
   fetch: FetchFn;
   ApiInterval: number;
@@ -60,6 +61,10 @@ export const DefaultMJConfig: MJConfig = {
   ImageProxy: "",
   DiscordBaseUrl: "https://discord.com",
   WsBaseUrl: "wss://gateway.discord.gg/?encoding=json&v=9",
+  DiscordsaysUrl:
+    typeof document === 'undefined'
+      ? 'https://936929561302675456.discordsays.com'
+      : '',
   fetch: fetch,
   WebSocket: WebSocket,
 };

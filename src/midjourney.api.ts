@@ -210,6 +210,75 @@ export class MidjourneyApi extends Command {
     });
   }
 
+  async getImageInfoApi({
+    customId,
+  }:{
+    customId: string,
+  }) {
+    try {
+      const response = await this.config.fetch(
+        `${this.config.DiscordsaysUrl}/inpaint/api/get-image-info/0/0/${customId}`,
+      )
+      console.log('[getImageInfoApi][response]', response?.status)
+      // 尝试解析响应体为JSON
+      const data = await response.json(); // 假设响应是JSON格式
+      return {
+        status: response.status,
+        body: data
+      }
+    } catch (e) {
+      console.log('[getImageInfoApi][error]', e)
+      return {
+        status: 500
+      }
+    }
+  }
+
+  async InpaintApi({
+    customId,
+    prompt,
+    mask,
+  }:{
+    customId: string,
+    prompt: string,
+    mask: string,
+  }) {
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    try {
+      console.log('[InpaintApi][start]', this.config.DiscordsaysUrl, {
+        method: 'POST',
+        body: JSON.stringify({
+          customId,
+          prompt,
+          userId: '0',
+          username: '0',
+          full_prompt: null,
+        }),
+        headers,
+      })
+      const response = await this.config
+      .fetch(`${this.config.DiscordsaysUrl}/inpaint/api/submit-job`, {
+        method: 'POST',
+        body: JSON.stringify({
+          customId,
+          prompt,
+          mask: mask.replace(/^data:.+?;base64,/, ''),
+          userId: '0',
+          username: '0',
+          full_prompt: null,
+        }),
+        headers,
+      })
+      console.log('[InpaintApi][response]', response?.status)
+      return response?.status
+    } catch (e) {
+      console.log('[InpaintApi][error]', e)
+      return 500
+    }
+  }
+
   async CustomApi({
     msgId,
     customId,
