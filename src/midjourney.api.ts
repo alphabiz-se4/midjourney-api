@@ -382,7 +382,7 @@ export class MidjourneyApi extends Command {
   }) {
     return this.safeIteractions({
       targetUrl: `channels/${this.config.PrivateChannelId}/messages?limit=${limit}`,
-      SalaiToken: this.config.PrivateSalaiToken,
+      SalaiToken: this.config.SalaiToken,
       needResult,
       method: 'GET',
     });

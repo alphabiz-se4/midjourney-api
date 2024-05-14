@@ -54,7 +54,6 @@ export class Command {
       headers: { authorization: this.config.SalaiToken },
     });
     const data = await response.json();
-    console.log('@@@[allCommand]', url, data)
     if (data?.application_commands) {
       data.application_commands.forEach((command: any) => {
         const name = getCommandName(command.name);
@@ -76,7 +75,6 @@ export class Command {
       headers: { authorization: this.config.SalaiToken },
     });
     const data = await response.json();
-    console.log('@@@[getCommand]', name, url, data)
     if (data?.application_commands?.[0]) {
       return data.application_commands[0];
     }
