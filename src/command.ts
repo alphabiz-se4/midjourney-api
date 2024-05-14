@@ -18,6 +18,7 @@ export const Commands = [
   "stealth",
   "shorten",
   "subscribe",
+  "DM Results"
 ] as const;
 export type CommandName = (typeof Commands)[number];
 function getCommandName(name: string): CommandName | undefined {
@@ -113,6 +114,12 @@ export class Command {
   }
   private fetchQueue = async.queue(this.processFetchRequest, 1);
 
+  async DMResultsPayload(msgId: string, nonce?: string) {
+    const data = await this.commandData("DM Results", [], [],{
+      target_id: msgId,
+    });
+    return this.data2Paylod(data, nonce);
+  }
   async imaginePayload(prompt: string, nonce?: string) {
     const data = await this.commandData("imagine", [
       {
@@ -184,7 +191,8 @@ export class Command {
   protected async commandData(
     name: CommandName,
     options: any[] = [],
-    attachments: any[] = []
+    attachments: any[] = [],
+    args: object = {},
   ) {
     const command = await this.cacheCommand(name);
     const data = {
@@ -195,6 +203,7 @@ export class Command {
       options,
       application_command: command,
       attachments,
+      ...args
     };
     return data;
   }

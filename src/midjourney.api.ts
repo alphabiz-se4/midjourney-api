@@ -373,6 +373,15 @@ export class MidjourneyApi extends Command {
     });
   }
 
+  async DMResultsApi({
+    msgId
+  }: {
+    msgId: string
+  }) {
+    const payload = await this.DMResultsPayload(msgId, nextNonce());
+    return this.safeIteractions(payload);
+  }
+
   async GetJobInfoApi({
     limit = 50,
     needResult = 'Response'

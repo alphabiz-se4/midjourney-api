@@ -193,18 +193,23 @@ export class Midjourney extends MidjourneyMessage {
   async Seed(msgId: string, hash?: string) {
     // const wsClient = await this.getWsClient();
     this.log(`Seed`, msgId);
-    const httpStatus = await this.MJApi.SeedApi({ msgId });
-    this.log(`Seed [httpStatus]`, httpStatus);
+    // const httpStatus = await this.MJApi.SeedApi({ msgId });
+    // this.log(`Seed [httpStatus]`, httpStatus);
+    // if (httpStatus !== 204) {
+    //   throw new Error(`SeedApi failed with status ${httpStatus}`);
+    // }
+    // await new Promise(resolve => setTimeout(resolve, 3000))
+    // const CancelSeedApiHttpStatus = await this.MJApi.CancelSeedApi({ msgId });
+    // this.log(`CancelSeed [httpStatus]`, CancelSeedApiHttpStatus);
+    // if (CancelSeedApiHttpStatus !== 204) {
+    //   throw new Error(`CancelSeedApi failed with status ${CancelSeedApiHttpStatus}`);
+    // }
+    const httpStatus = await this.MJApi.DMResultsApi({ msgId })
+    this.log(`DMResultsApi [httpStatus]`, httpStatus);
     if (httpStatus !== 204) {
       throw new Error(`SeedApi failed with status ${httpStatus}`);
     }
-    await new Promise(resolve => setTimeout(resolve, 3000))
-    const CancelSeedApiHttpStatus = await this.MJApi.CancelSeedApi({ msgId });
-    this.log(`CancelSeed [httpStatus]`, CancelSeedApiHttpStatus);
-    if (CancelSeedApiHttpStatus !== 204) {
-      throw new Error(`CancelSeedApi failed with status ${CancelSeedApiHttpStatus}`);
-    }
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    await new Promise(resolve => setTimeout(resolve, 5000))
     const jobResult = await this.MJApi.GetJobInfoApi({})
     let JobInfoList
     try {
@@ -233,7 +238,7 @@ export class Midjourney extends MidjourneyMessage {
       throw new Error(`GetJobInfoApi failed with ${error.message}`);
     }
     const targetJob = JobInfoList.find((info: any) =>  hash ? info?.content?.includes(`**Job ID**: ${hash}`) : info?.components?.[0]?.components?.[0]?.url.includes(msgId))
-    let match = targetJob.content.match(/\*\*seed\*\*\s(\d+)/);
+    let match = targetJob?.content?.match(/\*\*seed\*\*\s(\d+)/);
     return  match ? match[1] : null;
   }
   async Shorten(prompt: string) {
