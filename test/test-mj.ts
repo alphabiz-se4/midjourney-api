@@ -8,23 +8,24 @@ async function main() {
     ServerId: <string>process.env.MIDJOURNEY_SERVER_ID,
     ChannelId: <string>process.env.MIDJOURNEY_CHANNEL_ID,
     SalaiToken: <string>process.env.MIDJOURNEY_SALAI_TOKEN,
+    BotChannelId: <string>process.env.MIDJOURNEY_BOT_CHANNEL_ID,
     Debug: true,
     Ws: true, //enable ws is required for remix mode
   });
   const initResponce = await client.init(); //init auto enable remix mode
-  // const prompt =
-  //   "Big shark --fast";
-  // const Imagine = await client.Imagine(
-  //   prompt,
-  //   (uri, progress) => {
-  //     console.log("Imagine.loading", uri, "progress", progress);
-  //   }
-  // );
-  // console.log(Imagine);
-  // if (!Imagine) {
-  //   console.log("no message");
-  //   return;
-  // }
+  const prompt =
+    "Big shark --fast";
+  const Imagine = await client.Imagine(
+    prompt,
+    (uri, progress) => {
+      console.log("Imagine.loading", uri, "progress", progress);
+    }
+  );
+  console.log('@@@', Imagine);
+  if (!Imagine) {
+    console.log("no message");
+    return;
+  }
   // const V1CustomID = Imagine.options?.find((o) => o.label === "V1")?.custom;
   // if (!V1CustomID) {
   //   console.log("no V1");
@@ -71,28 +72,28 @@ async function main() {
   // });
   // console.log("Upscale", Upscale);
 
-  const customDate = new Date()
-  console.log('!!!', initResponce.config)
-  setTimeout(async () => {
-    const infoResponse = await client.Info()
-    const { runningJobs } = infoResponse
-    console.log('infoResponse!!!', customDate.valueOf(), runningJobs.split('\n'))
-  }, 10000)
-  // Custom old
-  console.log('Custom old!!!');
+  // const customDate = new Date()
+  // console.log('!!!', initResponce.config)
+  // setTimeout(async () => {
+  //   const infoResponse = await client.Info()
+  //   const { runningJobs } = infoResponse
+  //   console.log('infoResponse!!!', customDate.valueOf(), runningJobs.split('\n'))
+  // }, 10000)
+  // // Custom old
+  // console.log('Custom old!!!');
   
-  const Varition = await client.Custom({
-    msgId: "1163376023245697054",
-    flags: 0,
-    // hash: 'dc8afbd8-cd32-4e59-b081-64a5acaf4aad',
-    customId: "MJ::JOB::variation::1::dc8afbd8-cd32-4e59-b081-64a5acaf4aad",
-    content: "Hand-drawn sailboat --ar 2:3",
-    // content: "Coloured flatbread, Girl holding a biscuit Smiling happily Three-quarters profile Lines Monochrome ", //remix mode require content
-    loading: (uri, progress) => {
-      console.log("loading", uri, "progress", progress);
-    },
-  });
-  console.log('Custom old!!!!!!', Varition);
+  // const Varition = await client.Custom({
+  //   msgId: "1163376023245697054",
+  //   flags: 0,
+  //   // hash: 'dc8afbd8-cd32-4e59-b081-64a5acaf4aad',
+  //   customId: "MJ::JOB::variation::1::dc8afbd8-cd32-4e59-b081-64a5acaf4aad",
+  //   content: "Hand-drawn sailboat --ar 2:3",
+  //   // content: "Coloured flatbread, Girl holding a biscuit Smiling happily Three-quarters profile Lines Monochrome ", //remix mode require content
+  //   loading: (uri, progress) => {
+  //     console.log("loading", uri, "progress", progress);
+  //   },
+  // });
+  // console.log('Custom old!!!!!!', Varition);
   
   
     // // Varition old

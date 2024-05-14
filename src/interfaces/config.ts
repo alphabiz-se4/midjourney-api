@@ -8,6 +8,7 @@ export interface MJConfig {
   ChannelId: string;
   PrivateChannelId?: string;
   PrivateSalaiToken?: string;
+  BotChannelId?: string;
   SalaiToken: string;
   BotId: typeof MJBot | typeof NijiBot;
   Debug: boolean;
@@ -31,6 +32,7 @@ export interface MJConfigParam {
   ChannelId?: string; //DISCORD_CHANNEL_ID
   PrivateChannelId?: string; // DISCORD_PRIVATE_CHANNEL_ID
   PrivateSalaiToken?: string;
+  BotChannelId?: string;
   ServerId?: string; //DISCORD_SERVER_ID
   BotId?: typeof MJBot | typeof NijiBot; //DISCORD_BOT_ID MJBot OR NijiBot
   Debug?: boolean; // print log

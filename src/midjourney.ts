@@ -47,7 +47,7 @@ export class Midjourney extends MidjourneyMessage {
     // } else {
     //   await this.MJApi.allCommand();
     // }
-    this.MJApi.allCommand()
+    await this.MJApi.allCommand();
 
     if (this.wsClient) return this;
     this.wsClient = new WsMessage(this.config, this.MJApi);
