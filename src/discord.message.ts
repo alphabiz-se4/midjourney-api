@@ -152,6 +152,12 @@ export class MidjourneyMessage {
     const headers = {
       "Content-Type": "application/json",
       Authorization: this.config.SalaiToken,
+      "User-Agent": this.config.UserAgent,
+      "X-Debug-Options": "bugReporterEnabled",
+      "X-Discord-Locale": "en-US",
+      "X-Discord-Timezone": "Asia/Shanghai",
+      "X-Super-Properties": this.config.XSuperProperties,
+      "Cookie": `__dcfduid=${this.config.__dcfduid}; __sdcfduid=${this.config.__sdcfduid};`,
     };
     const response = await this.config.fetch(
       `${this.config.DiscordBaseUrl}/api/v10/channels/${this.config.ChannelId}/messages?limit=${limit}`,

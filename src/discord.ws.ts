@@ -145,7 +145,7 @@ export class WsMessage {
       }
       if (embeds?.[0]) {
         const { color, description, title } = embeds[0];
-        this.log("embeds[0].color", color);
+        this.log("[RESPONSE_ERROR]embeds[0]", embeds?.[0]);
         switch (color) {
           case 16711680: //error
             if (title == "Action needed to continue") {

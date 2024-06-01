@@ -64,6 +64,12 @@ export class MidjourneyApi extends Command {
       const headers = {
         "Content-Type": "application/json",
         Authorization: this.config.SalaiToken,
+        "User-Agent": this.config.UserAgent,
+        "X-Debug-Options": "bugReporterEnabled",
+        "X-Discord-Locale": "en-US",
+        "X-Discord-Timezone": "Asia/Shanghai",
+        "X-Super-Properties": this.config.XSuperProperties,
+        "Cookie": `__dcfduid=${this.config.__dcfduid}; __sdcfduid=${this.config.__sdcfduid};`,
       };
       const response = await this.config.fetch(
         `${this.config.DiscordBaseUrl}/api/v9/interactions`,
@@ -90,6 +96,12 @@ export class MidjourneyApi extends Command {
       const headers = {
         "Content-Type": "application/json",
         Authorization: payload.SalaiToken || this.config.SalaiToken,
+        "User-Agent": this.config.UserAgent,
+        "X-Debug-Options": "bugReporterEnabled",
+        "X-Discord-Locale": "en-US",
+        "X-Discord-Timezone": "Asia/Shanghai",
+        "X-Super-Properties": this.config.XSuperProperties,
+        "Cookie": `__dcfduid=${this.config.__dcfduid}; __sdcfduid=${this.config.__sdcfduid};`,
       };
       console.log('[getInteractions][start]', headers)
       const response = await this.config.fetch(
@@ -245,6 +257,12 @@ export class MidjourneyApi extends Command {
   }) {
     const headers = {
       "Content-Type": "application/json",
+      "User-Agent": this.config.UserAgent,
+        "X-Debug-Options": "bugReporterEnabled",
+        "X-Discord-Locale": "en-US",
+        "X-Discord-Timezone": "Asia/Shanghai",
+        "X-Super-Properties": this.config.XSuperProperties,
+        "Cookie": `__dcfduid=${this.config.__dcfduid}; __sdcfduid=${this.config.__sdcfduid};`,
     };
     try {
       console.log('[InpaintApi][start]', this.config.DiscordsaysUrl, {
@@ -593,6 +611,12 @@ export class MidjourneyApi extends Command {
     const headers = {
       Authorization: SalaiToken,
       "content-type": "application/json",
+      "User-Agent": this.config.UserAgent,
+        "X-Debug-Options": "bugReporterEnabled",
+        "X-Discord-Locale": "en-US",
+        "X-Discord-Timezone": "Asia/Shanghai",
+        "X-Super-Properties": this.config.XSuperProperties,
+        "Cookie": `__dcfduid=${this.config.__dcfduid}; __sdcfduid=${this.config.__sdcfduid};`,
     };
     const url = new URL(
       `${DiscordBaseUrl}/api/v9/channels/${ChannelId}/attachments`
@@ -618,7 +642,15 @@ export class MidjourneyApi extends Command {
     contentType: string
   ): Promise<void> {
     const body = new Uint8Array(data);
-    const headers = { "content-type": contentType };
+    const headers = { 
+      "content-type": contentType,
+      "User-Agent": this.config.UserAgent,
+        "X-Debug-Options": "bugReporterEnabled",
+        "X-Discord-Locale": "en-US",
+        "X-Discord-Timezone": "Asia/Shanghai",
+        "X-Super-Properties": this.config.XSuperProperties,
+        "Cookie": `__dcfduid=${this.config.__dcfduid}; __sdcfduid=${this.config.__sdcfduid};`,
+    };
     const response = await this.config.fetch(slot.upload_url, {
       method: "PUT",
       headers,

@@ -52,9 +52,18 @@ export class Command {
     const url = this.config.BotChannelId ? `${this.config.DiscordBaseUrl}/api/v9/channels/${this.config.BotChannelId}/application-command-index`
       : `${this.config.DiscordBaseUrl}/api/v9/guilds/${serverId}/application-command-index`;
     const response = await this.safeFetch(url, {
-      headers: { authorization: this.config.SalaiToken },
+      headers: { 
+        authorization: this.config.SalaiToken,
+        "User-Agent": this.config.UserAgent,
+        "X-Debug-Options": "bugReporterEnabled",
+        "X-Discord-Locale": "en-US",
+        "X-Discord-Timezone": "Asia/Shanghai",
+        "X-Super-Properties": this.config.XSuperProperties,
+        "Cookie": `__dcfduid=${this.config.__dcfduid}; __sdcfduid=${this.config.__sdcfduid};`,
+      },
     });
     const data = await response.json();
+    // console.log('@@@allCommand', data)
     if (data?.application_commands) {
       data.application_commands.forEach((command: any) => {
         const name = getCommandName(command.name);
@@ -73,9 +82,18 @@ export class Command {
     const url = this.config.BotChannelId ? `${this.config.DiscordBaseUrl}/api/v9/channels/${this.config.BotChannelId}/application-command-index`
       : `${this.config.DiscordBaseUrl}/api/v9/guilds/${serverId}/application-command-index`;
     const response = await this.safeFetch(url, {
-      headers: { authorization: this.config.SalaiToken },
+      headers: { 
+        authorization: this.config.SalaiToken,
+        "User-Agent": this.config.UserAgent,
+        "X-Debug-Options": "bugReporterEnabled",
+        "X-Discord-Locale": "en-US",
+        "X-Discord-Timezone": "Asia/Shanghai",
+        "X-Super-Properties": this.config.XSuperProperties,
+        "Cookie": `__dcfduid=${this.config.__dcfduid}; __sdcfduid=${this.config.__sdcfduid};`,
+      },
     });
     const data = await response.json();
+    // console.log('@@@getCommand', data)
     if (data?.application_commands?.[0]) {
       return data.application_commands[0];
     }
